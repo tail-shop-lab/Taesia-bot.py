@@ -27,7 +27,7 @@ def daily_embed(name, value):
 class Core(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.messages = ['ㅌ도움말', '주인| 가위#1111', 'Team Project A']
+        self.messages = ['ㅌ도움말', '주인 | 가위#1111', 'Team Project A']
         asyncio.get_event_loop().create_task(self.on_load())
 
     @tasks.loop(seconds=10)
@@ -99,10 +99,10 @@ class Core(commands.Cog):
                     m = '오늘 미세먼지는 보통이에요!'
                     dust.append(m)
                 elif int(temp[3][:-3]) >= 81 and int(temp[3][:-3]) <= 150:
-                    m = '오늘 미세먼지는 나쁨이에요!,마스크착용이 필요해요!'
+                    m = '오늘 미세먼지는 나쁨이에요!, 마스크 착용이 필요해요!'
                     dust.append(m)
                 elif int(temp[3][:-3]) >= 151:
-                    m = '오늘 미세먼지는 매우나빠요!, 마스크를 꼭! 착용하세요!'
+                    m = '오늘 미세먼지는 매우 나빠요!, 마스크를 꼭! 착용하세요!'
                     dust.append(m)
                 day.add_field(name=f'미세먼지: {temp[3]}', value=dust[0])
                 smalldust = []
@@ -113,10 +113,10 @@ class Core(commands.Cog):
                     mm = '오늘 초미세먼지는 보통이에요!'
                     smalldust.append(mm)
                 elif int(temp[4][:-3]) >= 36 and int(temp[4][:-3]) <= 75:
-                    mm = '오늘 초미세먼지는 나쁨이에요!,마스크착용이 필요하거나 외출을 자제해주세요!'
+                    mm = '오늘 초미세먼지는 나쁨이에요!, 마스크 착용이 필요하거나 외출을 자제해주세요!'
                     smalldust.append(mm)
                 elif int(temp[4][:-3]) >= 76:
-                    mm = '오늘 초미세먼지는 매우나빠요!, 외출을 자제해주세요!'
+                    mm = '오늘 초미세먼지는 매우 나빠요!, 외출을 자제해주세요!'
                     smalldust.append(mm)
                 day.add_field(name=f'초미세먼지: {temp[4]}', value=smalldust[0])
                 day.add_field(name=f"검색된 주제: {str(sh[2])}", value=f'기사제목- {str(news[0])}', inline=False)
@@ -126,12 +126,12 @@ class Core(commands.Cog):
                     await self.bot.get_user(int(sh[0])).send(embed=day)
                     num += 1
                     success += 1
-                    await self.bot.get_channel(782261035377229845).send(embed=daily_embed(name='SUCCESS!', value=f'{str(num)}번째 데일리발송을 성공했습니다!'))
+                    await self.bot.get_channel(782261035377229845).send(embed=daily_embed(name='SUCCESS!', value=f'{str(num)}번째 데일리 발송을 성공했습니다!'))
                 except:
                     fail += 1
                     num += 1
                     await self.bot.get_channel(782261035377229845).send('<@300535826088067072>')
-                    await self.bot.get_channel(782261035377229845).send(embed=daily_embed(name='ERROR!',value=f'{str(num)}번째 데일리 발송중 에러가 발생했습니다.\n발생된 유저ID: {show[0]}'))
+                    await self.bot.get_channel(782261035377229845).send(embed=daily_embed(name='ERROR!',value=f'{str(num)}번째 데일리 발송중 에러가 발생했습니다.\n발생된 유저 ID: {show[0]}'))
                     pass
                 temp.clear()
                 news.clear()
@@ -139,7 +139,7 @@ class Core(commands.Cog):
                 dust.clear()
                 smalldust.clear()
             await self.bot.get_channel(782261035377229845).send('<@300535826088067072>')
-            await self.bot.get_channel(782261035377229845).send(embed=daily_embed(name='DONE!', value=f'데일리 발송을 모두 마쳤습니다! \n발송시도한 DM: {str(num)}\n성공: {str(success)}\n실패: {str(fail)}'))
+            await self.bot.get_channel(782261035377229845).send(embed=daily_embed(name='DONE!', value=f'데일리 발송을 모두 마쳤습니다! \n발송 시도한 DM: {str(num)}\n성공: {str(success)}\n실패: {str(fail)}'))
 
 
     @tasks.loop(seconds=2)

@@ -5,7 +5,8 @@ import sqlite3
 
 import discord
 from discord.ext import commands
-from discord.ext.commands import has_permissions, MissingPermissions, CommandNotFound, BucketType, cooldown, CommandOnCooldown
+from discord.ext.commands import has_permissions, MissingPermissions, CommandNotFound, BucketType, cooldown, \
+    CommandOnCooldown
 from discord import Webhook, RequestsWebhookAdapter
 from discord.utils import get
 import youtube_dl
@@ -13,7 +14,8 @@ import logging
 import random
 from cogs.core import Core
 from pytz import timezone
-from tools.checker import Checker,Embed
+from tools.checker import Checker, Embed
+
 money = sqlite3.connect("animal.db")
 
 money_cur = money.cursor()
@@ -27,11 +29,11 @@ EmbedColor = 0x4d004d
 level = sqlite3.connect("level.db")
 
 level_cur = level.cursor()
+
+
 class Economy(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
-
 
     async def cog_after_invoke(self, ctx):
         ser = str(ctx.author.id)
@@ -40,7 +42,7 @@ class Economy(commands.Cog):
         ad = random.randint(1, 5)
         if P_M == None:
             if ad <= 2:
-                await ctx.send('(광고)프리미엄서비스가 출시되었습니다! 자세한사항은 `가위#1111`로 DM주세요!')
+                await ctx.send('(광고)프리미엄 서비스가 출시되었습니다! 자세한 사항은 `가위#1111`로 DM 주세요!')
             else:
                 pass
         else:
@@ -54,13 +56,14 @@ class Economy(commands.Cog):
             return await ctx.send(embed=em.no_())
         elif await ch.licence() == 200:
             pass
-        level_cur.execute(f"SELECT user, exp, lv from level WHERE guild_id = {ctx.guild.id} ORDER BY exp + 0 DESC LIMIT 5")
+        level_cur.execute(
+            f"SELECT user, exp, lv from level WHERE guild_id = {ctx.guild.id} ORDER BY exp + 0 DESC LIMIT 5")
         result = level_cur.fetchall()
         embed = discord.Embed(title="채팅랭크 TOP5", colour=discord.Colour(0x6790a7))
         for i, x in enumerate(result, 1):
             embed.add_field(name=f"#{i}", value=f"<@{str(x[0])}> Level- `{str(x[2])}` Exp- `{str(x[1])}`",
                             inline=False)
-        embed.set_footer(text='채팅랭크는 서버별로 각각 다르게 다옵니다!')
+        embed.set_footer(text='채팅 랭크는 서버별로 각각 다르게 나옵니다!')
         await ctx.send(embed=embed)
         print(result)
 
@@ -74,15 +77,12 @@ class Economy(commands.Cog):
             pass
         level_cur.execute(f"SELECT name, exp, lv from level ORDER BY exp + 1 DESC LIMIT 10")
         result = level_cur.fetchall()
-        embed = discord.Embed(title="채팅랭크 TOP10", colour=discord.Colour(0x6790a7))
+        embed = discord.Embed(title="채팅 랭크 TOP 10", colour=discord.Colour(0x6790a7))
         for i, x in enumerate(result, 1):
             embed.add_field(name=f"#{i}", value=f"{str(x[0])} Level- `{str(x[2])}` Exp- `{str(x[1])}`",
                             inline=False)
         await ctx.send(embed=embed)
         print(result)
-
-
-
 
     @commands.command()
     async def 직업(self, ctx):
@@ -93,7 +93,9 @@ class Economy(commands.Cog):
         elif await ch.licence() == 200:
             pass
             return await ctx.send(embed=em.no_())
-        joblist = discord.Embed(title="직업리스트", description="1. 배관공\n2. 은행원\n3. 낚시꾼\n4. 경비원\n5. 유튜버\n\n직업을 가지고있지않으신분들은 'ㅌ취직 (직업이름)'으로 직업을 얻으세요.", color=EmbedColor)
+        joblist = discord.Embed(title="직업 리스트",
+                                description="1. 배관공\n2. 은행원\n3. 낚시꾼\n4. 경비원\n5. 유튜버\n\n직업을 가지고 있지 않으신 분들은 'ㅌ취직 (직업이름)'으로 직업을 얻으세요.",
+                                color=EmbedColor)
         await ctx.send(embed=joblist)
 
     @commands.command()
@@ -110,7 +112,7 @@ class Economy(commands.Cog):
         print(J_D)
         if jobname == "배관공":
             job = '배관공'
-            money_cur.execute(f"UPDATE economy SET job = ? WHERE user = ?",(job, ser))
+            money_cur.execute(f"UPDATE economy SET job = ? WHERE user = ?", (job, ser))
             money.commit()
             await ctx.send("배관공으로 취직하셨습니다!")
         elif jobname == "은행원":
@@ -134,7 +136,7 @@ class Economy(commands.Cog):
             money.commit()
             await ctx.send("유튜버로 취직하셨습니다!")
         else:
-            await ctx.send("이런..입력하신건 직업리스트에 없는거에요 다시 시도해주세요!")
+            await ctx.send("이런... 입력하신 건 직업리스트에 없는 거에요. 다시 시도해주세요!")
 
     @commands.command(pass_context=True)
     async def 지갑(self, ctx):
@@ -147,7 +149,8 @@ class Economy(commands.Cog):
         ser = str(ctx.author.id)
         money_cur.execute(f"SELECT * FROM economy WHERE user= {ser}")
         E_C = money_cur.fetchone()
-        balance = discord.Embed(title=f"{ctx.message.author}님의 지갑",description=f"**가진돈 : `{E_C[1]}`**\n**직업 : `{E_C[3]}`**", color=EmbedColor)
+        balance = discord.Embed(title=f"{ctx.message.author}님의 지갑",
+                                description=f"**가진 돈 : `{E_C[1]}`**\n**직업 : `{E_C[3]}`**", color=EmbedColor)
         await ctx.send(embed=balance)
 
     @commands.command(pass_context=True)
@@ -162,7 +165,7 @@ class Economy(commands.Cog):
         money_cur.execute(f"SELECT * FROM economy WHERE user= {ser}")
         E_C = money_cur.fetchone()
         balance = discord.Embed(title=f"{ctx.message.author}님의 통장",
-                                description=f"**계좌번호 : {ctx.message.author.id}**\n**가진돈 : `{E_C[2]}`**\n**직업 : `{E_C[3]}`**",
+                                description=f"**계좌번호 : {ctx.message.author.id}**\n**가진 돈 : `{E_C[2]}`**\n**직업 : `{E_C[3]}`**",
                                 color=EmbedColor)
         await ctx.send(embed=balance)
 
@@ -177,20 +180,20 @@ class Economy(commands.Cog):
         ser = str(ctx.author.id)
         money_cur.execute(f"SELECT * FROM backpack WHERE user= {ser}")
         pack = money_cur.fetchone()
-        backpack = discord.Embed(title=f'{ctx.author.display_name}님의 가방!',colour=discord.Colour.dark_green())
-        backpack.add_field(name='강아지사료',value=f'수량: {pack[1]}',inline=False)
-        backpack.add_field(name='고양이사료', value=f'수량: {pack[2]}',inline=False)
-        backpack.add_field(name='앵무새사료', value=f'수량: {pack[3]}',inline=False)
-        backpack.add_field(name='여우사료', value=f'수량: {pack[4]}',inline=False)
+        backpack = discord.Embed(title=f'{ctx.author.display_name}님의 가방!', colour=discord.Colour.dark_green())
+        backpack.add_field(name='강아지사료', value=f'수량: {pack[1]}', inline=False)
+        backpack.add_field(name='고양이사료', value=f'수량: {pack[2]}', inline=False)
+        backpack.add_field(name='앵무새사료', value=f'수량: {pack[3]}', inline=False)
+        backpack.add_field(name='여우사료', value=f'수량: {pack[4]}', inline=False)
         await ctx.send(embed=backpack)
-
 
     @commands.command(pass_context=True)
     async def 탈퇴(self, ctx):
         ser = str(ctx.author.id)
         money_cur.execute(f"SELECT * FROM economy WHERE user= {ser}")
         E_C = money_cur.fetchone()
-        DL = await ctx.send(f'진짜로 전체서비스(경제서비스및 봇라이센스)에서 탈퇴하시겠어요? 탈퇴하시면 아래의 모든 정보가 삭제되며 일부 기능을 제외한 나머지 기능은 사용하실수없습니다!!\n경제)가진돈- {E_C[1]}, 계좌- {E_C[2]}, 직업- {E_C[3]}\n라이센스) 사용자ID\n애완동물소유정보')
+        DL = await ctx.send(
+            f'진짜로 전체서비스(경제서비스및 봇라이센스)에서 탈퇴하시겠어요? 탈퇴하시면 아래의 모든 정보가 삭제되며 일부 기능을 제외한 나머지 기능은 사용하실수 없습니다!!\n경제)가진돈- {E_C[1]}, 계좌- {E_C[2]}, 직업- {E_C[3]}\n라이센스) 사용자 ID\n애완동물소유정보')
         reaction_list = ['✅', '❎']
         for r in reaction_list:
             await DL.add_reaction(r)
@@ -211,9 +214,6 @@ class Economy(commands.Cog):
                 return await ctx.send("❌탈퇴작업을 거부하셨습니다.")
         except TimeoutError:
             return await ctx.send("시간초과로 탈퇴작업이 취소되었습니다.")
-
-
-
 
     @commands.command(pass_context=True)
     async def 로또구매(self, ctx):
@@ -367,7 +367,8 @@ class Economy(commands.Cog):
             msg = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author == ctx.author)
         except asyncio.TimeoutError:
             await ctx.send("> 애완동물 분양이 취소되었습니다.", delete_after=30)
-        MG = await ctx.send(f'이름을 {msg.content}로 하시겠습니까? 동의하시면 ✅모양의 반응을, 다시 하실려면 ❎모양의 반응을 클릭해주세요. 또는 작업을 취소하실려면 🚫모양의 반응을 클릭해주세요.')
+        MG = await ctx.send(
+            f'이름을 {msg.content}로 하시겠습니까? 동의하시면 ✅모양의 반응을, 다시 하실려면 ❎모양의 반응을 클릭해주세요. 또는 작업을 취소하실려면 🚫모양의 반응을 클릭해주세요.')
         reaction_list = ['✅', '❎', '🚫']
         for r in reaction_list:
             await MG.add_reaction(r)
@@ -379,7 +380,7 @@ class Economy(commands.Cog):
             reaction, user = await self.bot.wait_for('reaction_add', timeout=60, check=check)
             if str(reaction) == "✅":
                 money_cur.execute("INSERT INTO animal VALUES (?, ?, ?, ?, ?, ?, ?)",
-                            (ser, ANI, msg.content, birth, 0, first, 1))
+                                  (ser, ANI, msg.content, birth, 0, first, 1))
                 money.commit()
                 await ctx.send(f'펫이름을 {msg.content}로 하여 정상분양되었습니다.')
             elif str(reaction) == "❎":
@@ -389,14 +390,13 @@ class Economy(commands.Cog):
                 except asyncio.TimeoutError:
                     await ctx.send("> 애완동물 분양이 취소되었습니다.", delete_after=30)
                 money_cur.execute("INSERT INTO animal VALUES (?, ?, ?, ?, ?, ?, ?)",
-                            (ser, ANI, msg1.content, birth, 0, first, 1))
+                                  (ser, ANI, msg1.content, birth, 0, first, 1))
                 money.commit()
                 await ctx.send(f'펫이름을 {msg1.content}로 하여 정상분양되었습니다.')
             elif str(reaction) == "🚫":
                 await ctx.send('입양작업을 취소하셨습니다.')
         except asyncio.TimeoutError:
             await ctx.send("> 애완동물 분양이 취소되었습니다.", delete_after=30)
-
 
     @commands.command(pass_context=True)
     async def 유저입양(self, ctx):
@@ -411,13 +411,13 @@ class Economy(commands.Cog):
         money_cur.execute(f"SELECT * FROM animal WHERE user= {ser}")
         P_T = money_cur.fetchone()
         if P_T is not None:
-            return await ctx.send('펫은 한마리만 가질수있습니다!')
+            return await ctx.send('펫은 한 마리만 가질수 있습니다!')
         money_cur.execute(f"SELECT * FROM animalsell")
         sell = money_cur.fetchone()
         if sell is not None:
             money_cur.execute(f"SELECT * FROM animalsell")
             sel = money_cur.fetchall()
-            MG = await ctx.send('분양게시글에 게시된 글이 있습니다! 여기서 입양하시겠습니까?')
+            MG = await ctx.send('분양 게시글에 게시된 글이 있습니다! 여기서 입양하시겠습니까?')
             reaction_list = ['✅', '❎']
             for r in reaction_list:
                 await MG.add_reaction(r)
@@ -432,7 +432,7 @@ class Economy(commands.Cog):
                     for show in sel:
                         num += 1
                         await ctx.send(f'{str(num)}.게시글 작성자- {show[0]}, 펫종류- {show[1]}, 펫이름- {show[2]}, 펫생일- {show[3]}')
-                    await ctx.send('어떤분의 펫을 입양하실건가요? 채팅으로 게시자의 이름을 적어주세요(ex: 홍길동)')
+                    await ctx.send('어떤분의 펫을 입양하실건가요? 채팅으로 게시자의 이름을 적어주세요 (ex: 홍길동)')
                     try:
                         msg3 = await self.bot.wait_for('message', timeout=60, check=lambda m: m.author == ctx.author)
                     except asyncio.TimeoutError:
@@ -454,7 +454,7 @@ class Economy(commands.Cog):
                                 sell2 = money_cur.fetchone()
                                 first = '낯섦'
                                 money_cur.execute("INSERT INTO animal VALUES (?, ?, ?, ?, ?, ?, ?)",
-                                            (ser, sell2[1], sell2[2], sell2[3], 0, first, 1))
+                                                  (ser, sell2[1], sell2[2], sell2[3], 0, first, 1))
                                 await self.bot.get_channel(int(sell2[5])).send(
                                     f'<@{sell2[6]}>님이 분양중이신 펫({sell2[2]})이 {ctx.author}님에게 분양되었어요!')
                                 money_cur.execute(f"DELETE FROM animalsell WHERE seller= '{msg3.content}'")
@@ -462,7 +462,7 @@ class Economy(commands.Cog):
                                 await ctx.send('거래완료!')
                             except:
                                 await ctx.send(
-                                    '거래중 에러가 발생했습니다! \n게시자의 닉네임을 **__정확히__**입력했는지 확인하여 다시 시도하시고 \n그래도 오류가 발생한다면 `가위#1111`로 연락부탁드리겠습니다.')
+                                    '거래중 에러가 발생했습니다! \n게시자의 닉네임을 **__정확히__**입력했는지 확인하여 다시 시도하시고 \n그래도 오류가 발생한다면 `가위#1111`로 연락 부탁드리겠습니다.')
                         elif str(reaction) == "❎":
                             await ctx.send('거래를 거부하였습니다.')
                     except asyncio.TimeoutError:
@@ -472,10 +472,10 @@ class Economy(commands.Cog):
             except asyncio.TimeoutError:
                 await ctx.send('거래가 취소되었습니다.')
         else:
-            await ctx.send('이런 아무도 분양글을 게시하지않았어요.')
+            await ctx.send('이런 아무도 분양글을 게시하지 않았어요.')
 
-            #print(sold)
-            #await ctx.send(f'분양글 게시자- {sold[0]},펫종류- {sold[1]}, 펫이름- {sold[2]},펫생일-{sold[3]}')
+            # print(sold)
+            # await ctx.send(f'분양글 게시자- {sold[0]},펫종류- {sold[1]}, 펫이름- {sold[2]},펫생일-{sold[3]}')
 
     @commands.command(pass_context=True)
     async def 자판기(self, ctx):
@@ -490,14 +490,14 @@ class Economy(commands.Cog):
         money_cur.execute(f"SELECT * FROM automachine")
         sel = money_cur.fetchall()
         num = 0
-        sold = discord.Embed(title='자판기',colour=discord.Colour.dark_green())
+        sold = discord.Embed(title='자판기', colour=discord.Colour.dark_green())
         for show in sel:
             num += 1
             if show[1] == 0:
                 value = '매진'
             else:
                 value = show[1]
-            sold.add_field(name=f'{str(num)}.{show[0]} 가격:{show[2]}',value=f'수량: {value}',inline=False)
+            sold.add_field(name=f'{str(num)}.{show[0]} 가격:{show[2]}', value=f'수량: {value}', inline=False)
         sold.set_footer(text='테스트 자판기')
         MG = await ctx.send(embed=sold)
         reaction_list = ['1️⃣', '2️⃣', '3️⃣', '4️⃣']
@@ -536,7 +536,7 @@ class Economy(commands.Cog):
                         await MG.remove_reaction(r, self.bot.user)
                     return
                 for r in reaction_list:
-                    await MG.remove_reaction(r,self.bot.user)
+                    await MG.remove_reaction(r, self.bot.user)
                 money_cur.execute(f"UPDATE automachine SET 수량 = 수량 - 5 WHERE 물건 = '사료(고양이용)'")
                 money_cur.execute(f"SELECT * FROM backpack")
                 money_cur.fetchone()
@@ -599,7 +599,7 @@ class Economy(commands.Cog):
         premium_cur.execute(f"SELECT * FROM premium WHERE user= {ser}")
         P_M = premium_cur.fetchone()
         if P_M == None:
-            await ctx.send(f'{ctx.author.mention}님! 가입하신 프리미엄기간이 종료되었거나 가입하지않아 정보가 존재하지않아요! 가입문의는 `가위#1111`로 문의주세요.')
+            await ctx.send(f'{ctx.author.mention}님! 가입하신 프리미엄 기간이 종료되었거나 가입하지 않아 정보가 존재하지 않아요! 가입 문의는 `가위#1111`로 문의 주세요.')
         else:
             await ctx.send(f'{ctx.author.mention}님의 프리미엄 상태\n시리얼코드: {P_M[1]}\n만료일: {P_M[2]}')
 
@@ -616,7 +616,7 @@ class Economy(commands.Cog):
         P_T = money_cur.fetchone()
         if P_T == None:
             return await ctx.send('애완동물이 없어요 분양받고 다시 요청하세요')
-        MG = await ctx.send(f'이름: {P_T[2]}\n정말로 이 펫을 파양(소유권 포기)하시겠습니까?파양할시 소유정보에서 삭제됩니다!')
+        MG = await ctx.send(f'이름: {P_T[2]}\n정말로 이 펫을 파양(소유권 포기)하시겠습니까? 파양할 시 소유정보에서 삭제됩니다!')
         reaction_list = ['✅', '❎']
         for r in reaction_list:
             await MG.add_reaction(r)
@@ -680,9 +680,6 @@ class Economy(commands.Cog):
         except asyncio.TimeoutError:
             await ctx.send('시간초과로 취소되었습니다.')
 
-
-
-
     @commands.command(pass_context=True)
     async def 펫분양(self, ctx):
         ch = Checker(ctx=ctx)
@@ -697,12 +694,12 @@ class Economy(commands.Cog):
         money_cur.execute(f"SELECT * FROM animal WHERE user= {ser}")
         P_T = money_cur.fetchone()
         if P_T == None:
-            return await ctx.send('애완동물이 없어요 분양받고 다시 요청하세요')
+            return await ctx.send('애완동물이 없어요. 분양받고 다시 요청하세요')
         money_cur.execute(f"SELECT * FROM animalsell WHERE seller= {ser}")
         sold = money_cur.fetchone()
         if sold is not None:
-            return await ctx.send('이미 분양중인 펫이 있습니다! 분양거래가 완료된후 다시 올릴수있습니다.')
-        MG = await ctx.send(f'이름: {P_T[2]}\n정말로 이 펫을 분양하시겠습니까? 분양글 올릴시 소유정보에서 삭제되고 분양데이터로 이전됩니다!')
+            return await ctx.send('이미 분양중인 펫이 있습니다! 분양거래가 완료된 후 다시 올릴 수 있습니다.')
+        MG = await ctx.send(f'이름: {P_T[2]}\n정말로 이 펫을 분양하시겠습니까? 분양글 올릴 시 소유정보에서 삭제되고 분양데이터로 이전됩니다!')
         reaction_list = ['✅', '❎']
         for r in reaction_list:
             await MG.add_reaction(r)
@@ -734,15 +731,19 @@ class Economy(commands.Cog):
                         try:
                             channel = discord.utils.get(ctx.guild.channels, name='펫-분양' or '펫분양')
                             own = ctx.author.id
-                            await channel.send(f'{ctx.author.mention}님이 분양글을 올렸습니다!\n펫정보:\n펫종류- {P_T[1]}\n펫이름- {P_T[2]}\n생일- {P_T[3]}\n게시글 작성자의 추가글- {msg.content}')
-                            money_cur.execute("INSERT INTO animalsell VALUES (?, ?, ?, ?, ?, ?, ?)", (seller, P_T[1], P_T[2], P_T[3], msg.content, channel.id, own))
+                            await channel.send(
+                                f'{ctx.author.mention}님이 분양글을 올렸습니다!\n펫정보:\n펫종류- {P_T[1]}\n펫이름- {P_T[2]}\n생일- {P_T[3]}\n게시글 작성자의 추가글- {msg.content}')
+                            money_cur.execute("INSERT INTO animalsell VALUES (?, ?, ?, ?, ?, ?, ?)",
+                                              (seller, P_T[1], P_T[2], P_T[3], msg.content, channel.id, own))
                             money_cur.execute(f"DELETE FROM animal WHERE user= {ser}")
                             money.commit()
                         except AttributeError:
-                            await ctx.send(f'{ctx.author.mention}님이 분양글을 올렸습니다!\n펫정보:\n펫종류- {P_T[1]}\n펫이름- {P_T[2]}\n생일- {P_T[3]}\n게시글 작성자의 추가글- {msg.content}')
+                            await ctx.send(
+                                f'{ctx.author.mention}님이 분양글을 올렸습니다!\n펫정보:\n펫종류- {P_T[1]}\n펫이름- {P_T[2]}\n생일- {P_T[3]}\n게시글 작성자의 추가글- {msg.content}')
                             ch = ctx.channel.id
                             own = ctx.author.id
-                            money_cur.execute("INSERT INTO animalsell VALUES (?, ?, ?, ?, ?, ?, ?)", (seller, P_T[1], P_T[2], P_T[3], msg.content, ch, own))
+                            money_cur.execute("INSERT INTO animalsell VALUES (?, ?, ?, ?, ?, ?, ?)",
+                                              (seller, P_T[1], P_T[2], P_T[3], msg.content, ch, own))
                             money_cur.execute(f"DELETE FROM animal WHERE user= {ser}")
                             money.commit()
                     elif str(reaction) == "❎":
@@ -750,8 +751,10 @@ class Economy(commands.Cog):
                             channel = discord.utils.get(ctx.guild.channels, name='펫-분양' or '펫분양')
                             own = ctx.author.id
                             mG = '게시글 내용없음(미작성)'
-                            await channel.send(f'{ctx.author.mention}님이 분양글을 올렸습니다!\n펫정보:\n펫종류- {P_T[1]}\n펫이름- {P_T[2]}\n생일- {P_T[3]}\n게시글 작성자의 추가글- 게시글 내용없음(미작성)')
-                            money_cur.execute("INSERT INTO animalsell VALUES (?, ?, ?, ?, ?, ?, ?)", (seller, P_T[1], P_T[2], P_T[3], mG, channel.id, own))
+                            await channel.send(
+                                f'{ctx.author.mention}님이 분양글을 올렸습니다!\n펫정보:\n펫종류- {P_T[1]}\n펫이름- {P_T[2]}\n생일- {P_T[3]}\n게시글 작성자의 추가글- 게시글 내용없음(미작성)')
+                            money_cur.execute("INSERT INTO animalsell VALUES (?, ?, ?, ?, ?, ?, ?)",
+                                              (seller, P_T[1], P_T[2], P_T[3], mG, channel.id, own))
                             money_cur.execute(f"DELETE FROM animal WHERE user= {ser}")
                             money.commit()
                         except AttributeError:
@@ -760,7 +763,8 @@ class Economy(commands.Cog):
                             mG = '게시글 내용없음(미작성)'
                             await ctx.send(
                                 f'{ctx.author.mention}님이 분양글을 올렸습니다!\n펫정보:\n펫종류- {P_T[1]}\n펫이름- {P_T[2]}\n생일- {P_T[3]}\n게시글 작성자의 추가글- 게시글 내용없음(미작성)')
-                            money_cur.execute("INSERT INTO animalsell VALUES (?, ?, ?, ?, ?, ?, ?)", (seller, P_T[1], P_T[2], P_T[3], mG, ch, own))
+                            money_cur.execute("INSERT INTO animalsell VALUES (?, ?, ?, ?, ?, ?, ?)",
+                                              (seller, P_T[1], P_T[2], P_T[3], mG, ch, own))
                             money_cur.execute(f"DELETE FROM animal WHERE user= {ser}")
                             money.commit()
                 except asyncio.TimeoutError:
@@ -771,7 +775,7 @@ class Economy(commands.Cog):
                         await channel.send(
                             f'{ctx.author.mention}님이 분양글을 올렸습니다!\n펫정보:\n펫종류- {P_T[1]}\n펫이름- {P_T[2]}\n생일- {P_T[3]}\n게시글 작성자의 추가글- 게시글 내용없음(미작성)')
                         money_cur.execute("INSERT INTO animalsell VALUES (?, ?, ?, ?, ?, ?, ?)",
-                                    (seller, P_T[1], P_T[2], P_T[3], msg.content, channel.id, own))
+                                          (seller, P_T[1], P_T[2], P_T[3], msg.content, channel.id, own))
                         money_cur.execute(f"DELETE FROM animal WHERE user= {ser}")
                         money.commit()
                     except AttributeError:
@@ -780,15 +784,13 @@ class Economy(commands.Cog):
                         await ctx.send(
                             f'{ctx.author.mention}님이 분양글을 올렸습니다!\n펫정보:\n펫종류- {P_T[1]}\n펫이름- {P_T[2]}\n생일- {P_T[3]}\n게시글 작성자의 추가글- 게시글 내용없음(미작성)')
                         money_cur.execute("INSERT INTO animalsell VALUES (?, ?, ?, ?, ?, ?, ?)",
-                                    (seller, P_T[1], P_T[2], P_T[3], msg.content, ch, own))
+                                          (seller, P_T[1], P_T[2], P_T[3], msg.content, ch, own))
                         money_cur.execute(f"DELETE FROM animal WHERE user= {ser}")
                         money.commit()
             elif str(reaction) == "❎":
                 await ctx.send('분양을 취소하셨습니다.')
         except asyncio.TimeoutError:
             await ctx.send('분양이 취소되었습니다.')
-
-
 
     @commands.command(pass_context=True)
     async def 펫상태(self, ctx):
@@ -802,10 +804,8 @@ class Economy(commands.Cog):
         money_cur.execute(f"SELECT * FROM animal WHERE user= {ser}")
         P_T = money_cur.fetchone()
         if P_T == None:
-            return await ctx.send('애완동물이 없어요 분양받고 다시 요청하세요')
+            return await ctx.send('애완동물이 없어요. 분양받고 다시 요청하세요')
         await ctx.send(f'종류: {P_T[1]}\n이름: {P_T[2]}\n생일: {P_T[3]}\n상태: {P_T[5]}\n호감도: {P_T[4]}')
-
-
 
     @commands.command(pass_context=True)
     async def 길들이기(self, ctx):
@@ -819,17 +819,17 @@ class Economy(commands.Cog):
         money_cur.execute(f"SELECT * FROM animal WHERE user= {ser}")
         am = money_cur.fetchone()
         if am == None:
-            return await ctx.send('애완동물이 없어요 분양받고 다시 요청하세요')
+            return await ctx.send('애완동물이 없어요. 분양받고 다시 요청하세요')
         UMM = '의심중'
         HMM = '익숙해짐'
         OH = '따르기시작함'
         GOOD = '따름'
         FAMILY = '가족'
         ran = ['좋아', '좋아', '좋아', '싫어']
-        FOOD1 = ['싫어!','안먹어!','맛없어!']
-        FOOD2 = ['맛있당','또 줘봐라!','주인 뭘좀 아는군']
-        TOUCH1 = ['만지지마!','기분나빠!','그냥 좀 내버려둬!']
-        TOUCH2 = ['더 만져줘~','기분 좋아~', '주인손은 내꺼!']
+        FOOD1 = ['싫어!', '안먹어!', '맛없어!']
+        FOOD2 = ['맛있당', '또 줘봐라!', '주인 뭘좀 아는군']
+        TOUCH1 = ['만지지마!', '기분나빠!', '그냥 좀 내버려둬!']
+        TOUCH2 = ['더 만져줘~', '기분 좋아~', '주인손은 내꺼!']
         exp = [25, 45, 65, 85, 110]
         randomchoice = random.choice(ran)
         ser = str(ctx.author.id)
@@ -874,7 +874,7 @@ class Economy(commands.Cog):
                         elif randomchoice == '싫어':
                             FOODCHOICE2 = random.choice(FOOD1)
                             print(FOODCHOICE2)
-                            await ctx.send(FOODCHOICE2 + '\n호감도를 얻지못했어요..')
+                            await ctx.send(FOODCHOICE2 + '\n호감도를 얻지 못했어요..')
                         print(L_V[4])
                         if L_V[4] >= exp[L_V[6] - 1]:
                             money_cur.execute(f"UPDATE animal SET lv = lv + 1 WHERE user = {ser}")
@@ -924,7 +924,7 @@ class Economy(commands.Cog):
                         elif randomchoice == '싫어':
                             FOODCHOICE2 = random.choice(FOOD1)
                             print(FOODCHOICE2)
-                            await ctx.send(FOODCHOICE2 + '\n호감도를 얻지못했어요..')
+                            await ctx.send(FOODCHOICE2 + '\n호감도를 얻지 못했어요..')
                         print(L_V[4])
                         if L_V[4] >= exp[L_V[6] - 1]:
                             money_cur.execute(f"UPDATE animal SET lv = lv + 1 WHERE user = {ser}")
@@ -974,7 +974,7 @@ class Economy(commands.Cog):
                         elif randomchoice == '싫어':
                             FOODCHOICE2 = random.choice(FOOD1)
                             print(FOODCHOICE2)
-                            await ctx.send(FOODCHOICE2 + '\n호감도를 얻지못했어요..')
+                            await ctx.send(FOODCHOICE2 + '\n호감도를 얻지 못했어요..')
                         print(L_V[4])
                         if L_V[4] >= exp[L_V[6] - 1]:
                             money_cur.execute(f"UPDATE animal SET lv = lv + 1 WHERE user = {ser}")
@@ -1024,7 +1024,7 @@ class Economy(commands.Cog):
                         elif randomchoice == '싫어':
                             FOODCHOICE2 = random.choice(FOOD1)
                             print(FOODCHOICE2)
-                            await ctx.send(FOODCHOICE2 + '\n호감도를 얻지못했어요..')
+                            await ctx.send(FOODCHOICE2 + '\n호감도를 얻지 못했어요..')
                         print(L_V[4])
                         if L_V[4] >= exp[L_V[6] - 1]:
                             money_cur.execute(f"UPDATE animal SET lv = lv + 1 WHERE user = {ser}")
@@ -1091,17 +1091,10 @@ class Economy(commands.Cog):
                         money_cur.execute(f"UPDATE animal SET statue = ? WHERE user = ?", (FAMILY, ser))
                 money.commit()
         except asyncio.TimeoutError:
-            await ctx.send('왜 부른거지..다시 잘레..')
-
-
-
-
-
-
-
+            await ctx.send('왜 부른거지... 다시 잘래...')
 
     @commands.command(pass_context=True)
-    async def 입금(self,ctx, amount: int):
+    async def 입금(self, ctx, amount: int):
         ch = Checker(ctx=ctx)
         em = Embed(ctx=ctx)
         if await ch.licence() == 400:
@@ -1155,7 +1148,7 @@ class Economy(commands.Cog):
         I_S = money_cur.fetchone()
         print(ser)
         if amount > I_S[1]:
-            await ctx.send(f"{ctx.message.author.mention}님! 도박에 배팅하실려는 금액이 지갑에 가지고계신돈보다 커서 배팅할수가없어요!")
+            await ctx.send(f"{ctx.message.author.mention}님! 도박에 배팅하시려는 금액이 지갑에 가지고 계신 돈보다 커서 배팅할수가 없어요!")
             return
         wl = random.randint(1, 9)
         randomNum = random.randint(2, 10)
@@ -1191,13 +1184,9 @@ class Economy(commands.Cog):
                                     color=EmbedColor)
             await ctx.send(embed=account)
 
-
-
-
-
     @commands.command(name="나무")
     @cooldown(3, 120, BucketType.user)
-    async def namu(self,ctx):
+    async def namu(self, ctx):
         ch = Checker(ctx=ctx)
         em = Embed(ctx=ctx)
         if await ch.licence() == 400:
@@ -1211,7 +1200,7 @@ class Economy(commands.Cog):
         randomNum = random.randint(2, 5)
         embed = discord.Embed(title="나무를 캡니다.", colour=discord.Colour.dark_green())
         msg = await ctx.send(embed=embed)
-        embed = discord.Embed(title=f"나무를 캐는중...", colour=discord.Colour.dark_green())
+        embed = discord.Embed(title=f"나무를 캐는 중...", colour=discord.Colour.dark_green())
         await msg.edit(embed=embed)
         await asyncio.sleep(randomNum)
         embed = discord.Embed(title="나무가 쓰러집니다", colour=discord.Colour.dark_green())
@@ -1223,7 +1212,7 @@ class Economy(commands.Cog):
                               colour=discord.Colour.dark_green())
         embed.add_field(name="자금", value="가진돈:" + str(int(I_S[1]) + randomNum) + "원" f"\n얻은수익: +{randomNum}")
         embed.add_field(name="직업", value=I_S[3], inline=False)
-        embed.set_footer(text="아나타...부자이신가요?")
+        embed.set_footer(text="아나타... 부자이신가요?")
         await ctx.send(embed=embed)
         money.commit()
 
@@ -1239,30 +1228,18 @@ class Economy(commands.Cog):
         await ctx.send(f"관리자의 권력으로 {amount}만큼 돈을 넣었습니다!")
         money.commit()
 
-
-
-
-
-
-
-
-
-
-
-
-
     @commands.command(pass_context=True)
     async def 가입(self, ctx):
         em = Embed(ctx=ctx)
         ser = str(ctx.author.id)
-        money_cur.execute(f"SELECT * FROM economy WHERE user= {ser}") #economy라는 테이블에서 ser이라는 값을 가진 란을 선택함
-        E_C = money_cur.fetchone() #cur.fetchone이면 한줄만 읽고 cur.fetchall 이면 모든걸 읽음
+        money_cur.execute(f"SELECT * FROM economy WHERE user= {ser}")  # economy라는 테이블에서 ser이라는 값을 가진 란을 선택함
+        E_C = money_cur.fetchone()  # cur.fetchone이면 한줄만 읽고 cur.fetchall 이면 모든걸 읽음
         print(ser)
         if E_C == None:
             amounts = 0
             bank = 0
             job = '무직'
-            money_cur.execute("INSERT INTO economy VALUES (?, ?, ?, ?)", (ser, amounts, bank, job)) #값을 넣음
+            money_cur.execute("INSERT INTO economy VALUES (?, ?, ?, ?)", (ser, amounts, bank, job))  # 값을 넣음
             money_cur.execute("INSERT INTO backpack VALUES (?, ?, ?, ?, ?)", (ser, 0, 0, 0, 0))
             money.commit()
             await ctx.send(embed=em.ok_())
@@ -1284,9 +1261,10 @@ class Economy(commands.Cog):
         money_cur.fetchone()
         print(ser)
         amount = 5
-        money_cur.execute(f"UPDATE economy SET amounts = amounts + {amount} WHERE user = {ser}") #economy라는 테이블에서 ser값을 가진 란에 amounts라는 인덱스를 수정함
+        money_cur.execute(
+            f"UPDATE economy SET amounts = amounts + {amount} WHERE user = {ser}")  # economy라는 테이블에서 ser값을 가진 란에 amounts라는 인덱스를 수정함
         money.commit()
-        await ctx.send("지원금 지급완료")
+        await ctx.send("지원금 지급 완료")
 
     @commands.command(pass_context=True)
     async def 송금(self, ctx, amount: int, other: discord.Member):
@@ -1305,9 +1283,9 @@ class Economy(commands.Cog):
         money_cur.execute(f"SELECT amounts FROM economy WHERE user= {other_id}")
         O_T = money_cur.fetchone()
         if O_T == None:
-            return await ctx.send("지정하신 상대방은 경제서비스에 가입되어있지않아요!")
+            return await ctx.send("지정하신 상대방은 경제서비스에 가입되어있지 않아요!")
         if other_id == ser:
-            return await ctx.send("자기자신에게 송금할수없습니다!")
+            return await ctx.send("자기 자신에게 송금할수 없습니다!")
         money.commit()
         await ctx.send("송금 완료")
 
@@ -1332,7 +1310,7 @@ class Economy(commands.Cog):
         elif J_D[4] == "은행원":
             randomCoins = random.randint(50, 100)
             money_cur.execute(f"UPDATE economy SET amounts = amounts + {randomCoins} WHERE user = {ser}")
-            await ctx.send("은행에서 일을하여 " + str(randomCoins) + " 만큼의 돈을 벌었습니다!")
+            await ctx.send("은행에서 일을 하여 " + str(randomCoins) + " 만큼의 돈을 벌었습니다!")
             money.commit()
         elif J_D[4] == "낚시꾼":
             randomCoins = random.randint(50, 100)
@@ -1342,7 +1320,7 @@ class Economy(commands.Cog):
         elif J_D[4] == "경비원":
             randomCoins = random.randint(50, 100)
             money_cur.execute(f"UPDATE economy SET amounts = amounts + {randomCoins} WHERE user = {ser}")
-            await ctx.send("밤동안 경비를 하여 " + str(randomCoins) + " 만큼의 돈을 벌었습니다!")
+            await ctx.send("밤 동안 경비를 하여 " + str(randomCoins) + " 만큼의 돈을 벌었습니다!")
             money.commit()
         elif J_D[4] == "유튜버":
             randomCoins = random.randint(50, 100)
@@ -1350,7 +1328,8 @@ class Economy(commands.Cog):
             await ctx.send("유튭각을 잡은 컨텐츠를 유튜브에 업로드하여 " + str(randomCoins) + " 만큼의 돈을 벌었습니다!")
             money.commit()
         elif J_D[4] == '무직':
-            await ctx.send("직업을 가지고있지않네요! 'ㅌ직업'으로 직업을 보신후 'ㅌ취직'으로 직업을 선택하세요!")
+            await ctx.send("직업을 가지고 있지 않네요! 'ㅌ직업'으로 직업을 보신 후 'ㅌ취직'으로 직업을 선택하세요!")
+
 
 def setup(bot):
     bot.add_cog(Economy(bot))
