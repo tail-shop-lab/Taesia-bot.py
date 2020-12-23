@@ -5,4 +5,4 @@
 
 # 사용 언어 및 기타
 * [Python](https://python.org) 3.8
-* PyCharm 2020.4 Community
+* PyCharm 2020.4 Community OR Pycharm 2020.3 Professional OR VSCode
